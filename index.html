@@ -331,9 +331,9 @@
             statusDiv.textContent = message;
             statusDiv.className = `status-message ${type} show`;
             
-            setTimeout(() => {
-                statusDiv.classList.remove('show');
-            }, 5000);
+            //setTimeout(() => {
+            //    statusDiv.classList.remove('show');
+            //}, 5000);
         }
 
         function hideCertificate() {
@@ -368,6 +368,7 @@
             verifyBtn.disabled = true;
             verifyBtn.classList.add('loading');
             hideCertificate();
+            statusDiv.classList.remove('show');
             
             try {
                 const response = await fetch(API_ENDPOINT, {
