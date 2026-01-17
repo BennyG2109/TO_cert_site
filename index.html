@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אימות תעודת שופט - התאחדות ההרמה הישראלית</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #00b4db 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            max-width: 600px;
+            width: 100%;
+            transition: transform 0.3s ease;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            max-width: 400px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #1e3c72;
+            font-size: 2em;
+            font-weight: 600;
+            background: linear-gradient(135deg, #1e3c72, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: rgba(248, 249, 250, 0.8);
+            border-radius: 15px;
+            border: 2px solid rgba(42, 82, 152, 0.1);
+        }
+
+        .form-section h3 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        label {
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #1e3c72;
+            font-size: 1em;
+        }
+
+        input[type="text"], 
+        input[type="tel"] {
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+            direction: ltr;
+            text-align: right;
+        }
+
+        input[type="text"]:focus, 
+        input[type="tel"]:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .verify-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #d4af37, #1e3c72);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .verify-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
+        }
+
+        .verify-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        .verify-button.loading .loading-spinner {
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        .status-message.error {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border: 2px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .status-message.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .certificate-section {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .certificate-section.show {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .certificate-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .certificate-header {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .certificate-header h3 {
+            margin: 0;
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+
+        .certificate-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .download-button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .download-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+                margin: 10px;
+                max-width: 95%;
+            }
+
+            h1 {
+                font-size: 1.6em;
+            }
+
+            .subtitle {
+                font-size: 1em;
+            }
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, rgba(30, 60, 114, 0.05), rgba(212, 175, 55, 0.05));
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #1e3c72;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .info-box strong {
+            color: #d4af37;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="logo.png" alt="התאחדות ההרמה הישראלית" class="logo">
+            <h1>אימות תעודת שופט</h1>
+            <div class="subtitle">בדיקת תקפות אישור שופט לאומי</div>
+        </div>
+        
+        <form id="verificationForm">
+            <div class="form-section">
+                <h3>פרטי השופט</h3>
+                
+                <div class="info-box">
+                    <strong>שימו לב:</strong> יש להזין את מספר תעודת הזהות ומספר הטלפון הרשומים במערכת
+                </div>
+
+                <div class="form-group">
+                    <label for="judgeId">מספר תעודת זהות</label>
+                    <input type="text" id="judgeId" placeholder="הזן מספר תעודת זהות" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phoneNumber">מספר טלפון</label>
+                    <input type="tel" id="phoneNumber" placeholder="הזן מספר טלפון" required>
+                </div>
+            </div>
+
+            <button type="submit" class="verify-button" id="verifyBtn">
+                <span>אמת תעודה</span>
+                <div class="loading-spinner"></div>
+            </button>
+
+            <div class="status-message" id="statusMessage"></div>
+        </form>
+
+        <div class="certificate-section" id="certificateSection">
+            <div class="certificate-container">
+                <div class="certificate-header">
+                    <h3>תעודת שופט מאומתת</h3>
+                </div>
+                <img id="certificateImage" class="certificate-image" alt="תעודת שופט">
+                <div style="padding: 15px;">
+                    <button class="download-button" id="downloadBtn">הורד תעודה</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_ENDPOINT = 'https://us-central1-weightlifting-ranking-database.cloudfunctions.net/judge_certification';
+        
+        function showStatusMessage(message, type = 'error') {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = message;
+            statusDiv.className = `status-message ${type} show`;
+            
+            setTimeout(() => {
+                statusDiv.classList.remove('show');
+            }, 5000);
+        }
+
+        function hideCertificate() {
+            document.getElementById('certificateSection').classList.remove('show');
+        }
+
+        function showCertificate(imageUrl) {
+            const certImg = document.getElementById('certificateImage');
+            certImg.src = imageUrl;
+            document.getElementById('certificateSection').classList.add('show');
+        }
+
+        // Form submission
+        document.getElementById('verificationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const verifyBtn = document.getElementById('verifyBtn');
+            const judgeId = document.getElementById('judgeId').value.trim();
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            
+            if (!judgeId) {
+                showStatusMessage('נא להזין מספר תעודת זהות');
+                return;
+            }
+            
+            if (!phoneNumber) {
+                showStatusMessage('נא להזין מספר טלפון');
+                return;
+            }
+            
+            // Show loading state
+            verifyBtn.disabled = true;
+            verifyBtn.classList.add('loading');
+            hideCertificate();
+            
+            try {
+                const response = await fetch(API_ENDPOINT, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        judgeId: judgeId,
+                        phoneNumber: phoneNumber
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText);
+                }
+                
+                // Get the image blob
+                const blob = await response.blob();
+                const imageUrl = URL.createObjectURL(blob);
+                
+                // Show the certificate
+                showCertificate(imageUrl);
+                
+                // Setup download button
+                document.getElementById('downloadBtn').onclick = function() {
+                    const link = document.createElement('a');
+                    link.href = imageUrl;
+                    link.download = `judge_certificate_${judgeId}.png`;
+                    link.click();
+                };
+                
+            } catch (error) {
+                console.error('API Error:', error);
+                showStatusMessage(error.message);
+            } finally {
+                verifyBtn.disabled = false;
+                verifyBtn.classList.remove('loading');
+            }
+        });
+
+        // Clear certificate when inputs change
+        document.getElementById('judgeId').addEventListener('input', hideCertificate);
+        document.getElementById('phoneNumber').addEventListener('input', hideCertificate);
+    </script>
+</body>
+</html>
